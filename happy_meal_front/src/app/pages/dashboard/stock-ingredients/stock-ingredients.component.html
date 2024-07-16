@@ -1,0 +1,20 @@
+<div class="container mx-auto my-8 px-4">
+  <div class="flex justify-center mb-4">
+    <input
+      type="text"
+      placeholder="Search ingredients..."
+      [(ngModel)]="searchInputValue"
+      (input)="filterIngredients()"
+      class="p-3 border border-gray-300 rounded w-1/2 focus:outline-none focus:ring-2 focus:ring-primary"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+    @for (ingredient of filteredIngredients$ | async; track $index) {
+      <div class="bg-white shadow-md rounded-md p-4">
+        <h3 class="text-xl font-bold mb-2 text-center">{{ ingredient.name }}</h3>
+        <h4 class="font-bold mb-2 text-center">Stock: #{{ ingredient.quantity }}</h4>
+      </div>
+    }
+  </div>
+</div>

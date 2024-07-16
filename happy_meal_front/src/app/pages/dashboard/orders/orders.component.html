@@ -1,0 +1,40 @@
+<div class="container mx-auto my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+  <div>
+    <h3 class="text-2xl font-bold mb-4 text-center">Pending Orders</h3>
+    @for (order of filterOrdersByStatus('pending') | async; track $index) {
+      <div class="bg-red-100 shadow-md rounded-md p-4 mb-4">
+        <p>
+          Order <span class="font-bold">#{{ order.id }}</span>
+        </p>
+        <p class="font-bold">{{ order.dish.name }}</p>
+        <p class="text-center self-center">{{ order.created_at | date: 'short' }}</p>
+      </div>
+    }
+  </div>
+
+  <div>
+    <h3 class="text-2xl font-bold mb-4 text-center">Orders Being Cooked</h3>
+    @for (order of filterOrdersByStatus('cooking') | async; track $index) {
+      <div class="bg-yellow-100 shadow-md rounded-md p-4 mb-4">
+        <p>
+          Order <span class="font-bold">#{{ order.id }}</span>
+        </p>
+        <p class="font-bold">{{ order.dish.name }}</p>
+        <p class="text-center self-center">{{ order.created_at | date: 'short' }}</p>
+      </div>
+    }
+  </div>
+
+  <div>
+    <h3 class="text-2xl font-bold mb-4 text-center">Finished Orders</h3>
+    @for (order of filterOrdersByStatus('completed') | async; track $index) {
+      <div class="bg-green-100 shadow-md rounded-md p-4 mb-4">
+        <p>
+          Order <span class="font-bold">#{{ order.id }}</span>
+        </p>
+        <p class="font-bold">{{ order.dish.name }}</p>
+        <p class="text-center self-center">{{ order.created_at | date: 'short' }}</p>
+      </div>
+    }
+  </div>
+</div>

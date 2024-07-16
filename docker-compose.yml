@@ -1,0 +1,156 @@
+services:
+  ms_order_broker:
+    build:
+      context: ./msOrderHandler
+      dockerfile: Dockerfile
+    container_name: ms_order_broker
+    environment:
+      - APP_NAME=msOrderBroker
+      - SERVER_PORT=8000
+      - APP_ENV=local
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=happy_meal
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - LOG_CHANNEL=stderr
+      - LOG_LEVEL=debug
+      - FRONTEND_BASE_URL=http://frontend_app:4200
+      - KITCHEN_MS_BASE_URL=http://ms_kitchen:8001
+      - PROVISIONING_MS_BASE_URL=http://ms_providing:8002
+    depends_on:
+      - mysql
+    volumes:
+      - ./msOrderHandler:/var/www
+    ports:
+      - "8000:8000"
+    networks:
+      - laravel-network
+
+  ms_kitchen:
+    build:
+      context: ./msKitchen
+      dockerfile: Dockerfile
+    container_name: ms_kitchen
+    environment:
+      - APP_NAME=msKitchen
+      - SERVER_PORT=8001
+      - APP_ENV=local
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=happy_meal
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - LOG_CHANNEL=stderr
+      - LOG_LEVEL=debug
+      - QUEUE_CONNECTION=database
+      - ORDERS_BROKER_MS_BASE_URL=http://ms_order_broker:8000
+      - ORDERS_BROKER_WEBHOOK_ORDER_READY_URL=http://ms_order_broker:8000/webhook/orders/:id/ready
+      - PROVISIONING_MS_BASE_URL=http://ms_providing:8002
+      - PROVISIONING_INGREDIENTS_REQUEST_URL=http://ms_providing:8002/stock/ingredients
+    depends_on:
+      - mysql
+    volumes:
+      - ./msKitchen:/var/www
+    ports:
+      - "8001:8001"
+    networks:
+      - laravel-network
+
+  ms_providing:
+    build:
+      context: ./msProvisioning
+      dockerfile: Dockerfile
+    container_name: ms_providing
+    environment:
+      - APP_NAME=msProvisioning
+      - SERVER_PORT=8002
+      - APP_ENV=local
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=happy_meal
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - LOG_CHANNEL=stderr
+      - LOG_LEVEL=debug
+      - ORDERS_BROKER_MS_BASE_URL=http://ms_order_broker:8000
+      - KITCHEN_MS_BASE_URL=http://ms_kitchen:8001
+      - KITCHEN_MS_WEBHOOK_URL=http://ms_kitchen:8001/webhook/ingredients/availability
+      - MARKET_API_URL=https://recruitment.alegra.com/api/farmers-market/buy
+    depends_on:
+      - mysql
+    volumes:
+      - ./msProvisioning:/var/www
+    ports:
+      - "8002:8002"
+    networks:
+      - laravel-network
+
+  frontend_app:
+    build:
+      context: ./happy_meal_front
+      dockerfile: Dockerfile
+    container_name: frontend_app
+    environment:
+      - ORDER_BROKER_BASE_URL=http://ms_order_broker:8000
+    depends_on:
+      - ms_order_broker
+    volumes:
+      - ./angular:/app
+    ports:
+      - "4200:4200"
+    networks:
+      - laravel-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=happy_meal
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - laravel-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    depends_on:
+      - mysql
+    networks:
+      - laravel-network
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www
+      - ./deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - mysql
+      - ms_order_broker
+      - ms_kitchen
+      - ms_providing
+    networks:
+      - laravel-network
+
+networks:
+  laravel-network:
+    driver: bridge
+
+volumes:
+  db_data:
