@@ -28,7 +28,7 @@ export class OrderService {
     this.ordersSubject.next(this.orders);
   }
 
-  fetchOrdersFromBroker(): void {
+  private fetchOrdersFromBroker(): void {
     this.http.get<any>(this.getOrdersUrl).subscribe(response => {
       const mappedOrders: Order[] = response['data'].map((item:Order) => ({
         id: item.id,
@@ -53,6 +53,7 @@ export class OrderService {
   }
 
   makeOrder(): Observable<any> {
-    return this.http.post<any>(this.makeOrderUrl,{});
+    const response = this.http.post<any>(this.makeOrderUrl,{});
+    this.fetchOrdersFromBroker();
   }
 }
