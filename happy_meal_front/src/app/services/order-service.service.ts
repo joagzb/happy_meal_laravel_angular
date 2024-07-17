@@ -55,5 +55,6 @@ export class OrderService {
   makeOrder(): Observable<any> {
     const response = this.http.post<any>(this.makeOrderUrl,{});
     this.fetchOrdersFromBroker();
+    return response;
   }
 }
