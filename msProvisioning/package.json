@@ -2,10 +2,6 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
-        "prod": "npm run production",
-        "production": "mix --production"
     },
     "devDependencies": {
         "axios": "^1.6.4"
