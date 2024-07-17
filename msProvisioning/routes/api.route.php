@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('stock')->group(function () {
-	Route::post('ingredients',[IngredientController::class,'requestIngredients'])->name('ingredients.request');
-	Route::get('ingredients',[IngredientController::class,'getStock'])->name('ingredients.stock');
+	Route::post('ingredients',[IngredientController::class,'requestIngredients']);
+	Route::get('',[IngredientController::class,'getStock']);
 
-    Route::get('purchases',PurchaseController::class)->name('ingredients.purchases');
+    Route::get('purchases',PurchaseController::class);
 });

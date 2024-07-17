@@ -15,10 +15,10 @@ class StockService
 
     public function getIngredients()
     {
-        $response = Http::get($this->PROVISIONING_MS_BASE_URL . '/stock/ingredients');
+        $response = Http::get($this->PROVISIONING_MS_BASE_URL . '/stock');
 
         if ($response->failed()) {
-            throw new \Exception("could not get ingredients from Provisioning MS: " . $response->body());
+            throw new \Exception("could not get ingredients from Provisioning MS: " . $response->status());
         }
 
         return $response->json();
