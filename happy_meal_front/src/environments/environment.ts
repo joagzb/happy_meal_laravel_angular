@@ -1,10 +1,10 @@
 export const environment = {
   production: true,
-  cli: true,
+  cli: false,
   environmentName: 'prod',
 
   urls: {
-    orderBrokerBaseUrl: process.env.ORDER_BROKER_BASE_URL,
+    orderBrokerBaseUrl: 'https://msorderhandler-production.up.railway.app',
     orders: {
       getOrders: 'kitchen/orders',
       getOrderById: 'kitchen/orders/:id',
