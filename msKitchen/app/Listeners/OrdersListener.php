@@ -9,6 +9,7 @@ use App\Events\OrderReceived;
 use App\Jobs\notifyOrderFinished;
 use App\Jobs\requestIngredient;
 use App\OrderStatusEnum;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Sleep;
 
@@ -27,7 +28,7 @@ class OrdersListener implements OrderStatusHandler
      */
     public function handle(OrderEvent $event): void
     {
-        switch($event){
+        switch ($event) {
             case $event instanceof OrderReceived:
                 $this->handleOrderReceived($event);
                 break;
@@ -40,14 +41,16 @@ class OrdersListener implements OrderStatusHandler
         }
     }
 
-    public function handleOrderReceived(OrderReceived $event): void{
+    public function handleOrderReceived(OrderReceived $event): void
+    {
         $orderReceived = $event->getOrder();
         Log::info("order received: " . $orderReceived->id . " with dish: " . $orderReceived->dish->name);
 
-        requestIngredient::dispatch($orderReceived);
+        requestIngredient::dispatch($orderReceived)->onQueue('orders');
     }
 
-    public function handleOrderReadyToCook(OrderReadyToCook $event): void{
+    public function handleOrderReadyToCook(OrderReadyToCook $event): void
+    {
         $order = $event->getOrder();
         $order->status = OrderStatusEnum::COOKING;
         $order->save();
@@ -60,14 +63,14 @@ class OrdersListener implements OrderStatusHandler
         event(new OrderFinished($order));
     }
 
-    public function handleOrderFinished(OrderFinished $event): void{
+    public function handleOrderFinished(OrderFinished $event): void
+    {
         $order = $event->getOrder();
         $order->status = OrderStatusEnum::COMPLETED;
         $order->save();
 
         Log::debug("order finished: " . $order->id . " with dish: " . $order->dish->name);
 
-        notifyOrderFinished::dispatch($event->getOrder());
+        notifyOrderFinished::dispatch($event->getOrder())->onQueue('orders');
     }
-
 }

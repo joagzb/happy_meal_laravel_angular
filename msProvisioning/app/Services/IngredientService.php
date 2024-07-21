@@ -9,7 +9,7 @@ class IngredientService
 {
     protected $purchaseService;
 
-    public function __construct(PurchaseService $purchaseService,)
+    public function __construct(PurchaseService $purchaseService)
     {
         $this->purchaseService = $purchaseService;
     }

@@ -47,8 +47,8 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
-RUN chown -R www-data:www-data /app/www
-RUN chmod -R 755 /app/www
+RUN chown -R www-data:www-data /app/www \
+    && chmod -R 775 /app/www/storage /app/www/bootstrap/cache
 
 # Expose the application port
 EXPOSE 8000
