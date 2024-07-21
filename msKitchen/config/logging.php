@@ -17,8 +17,7 @@ return [
     | the channels present in the list of "channels" configured below.
     |
     */
-    // LOG_CHANNEL=stderr
-    'default' => env('APP_ENV') == 'local' ? 'stderr' : env('LOG_CHANNEL'),
+    'default' => env('LOG_CHANNEL', 'stderr'),
 
     /*
     |--------------------------------------------------------------------------

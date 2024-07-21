@@ -17,20 +17,11 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     supervisor \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip mysqli \
+    && docker-php-ext-enable mysqli
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions
-RUN docker-php-ext-install \
-    zip mysqli \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd && docker-php-ext-enable mysqli
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
@@ -48,10 +39,11 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
-RUN chown -R www-data:www-data /app/www
-RUN chmod -R 755 /app/www
+RUN chown -R www-data:www-data /app/www \
+    && chmod -R 775 /app/www/storage /app/www/bootstrap/cache
 
 # Supervisor configuration
+RUN mkdir -p /var/log/supervisor && chown -R www-data:www-data /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose the application port

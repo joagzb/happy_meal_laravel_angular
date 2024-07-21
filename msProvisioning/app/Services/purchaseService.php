@@ -6,6 +6,7 @@ use App\Jobs\PurchaseIngredient;
 use App\Models\Ingredient;
 use App\Models\Purchase;
 use App\PurchaseStatusEnum;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class PurchaseService
@@ -18,15 +19,7 @@ class PurchaseService
         //
     }
 
-    public function handlePending(): void
-    {
-        $purchases = Purchase::where('status', PurchaseStatusEnum::PENDING)->get();
-        foreach ($purchases as $purchase) {
-            PurchaseIngredient::dispatch($purchase);
-        }
-    }
-
-    public function dispatchBuyOrder(Ingredient $ingredient, int $quantityNeeded)
+    public function dispatchBuyOrder(Ingredient $ingredient, int $quantityNeeded): void
     {
         Log::info("No " . $ingredient->name . " available. Dispatching buy order: " . $ingredient->name . " - " . $quantityNeeded);
 
@@ -38,6 +31,6 @@ class PurchaseService
             'buyAttempts' => 0,
         ]);
 
-        PurchaseIngredient::dispatch($purchase)->afterResponse();
+        PurchaseIngredient::dispatch($purchase)->onQueue('purchases');
     }
 }

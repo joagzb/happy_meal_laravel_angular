@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'default' => env('APP_ENV') == 'local' ? 'stderr' : env('LOG_CHANNEL'),
+    'default' => env('LOG_CHANNEL', 'stderr'),
 
     /*
     |--------------------------------------------------------------------------

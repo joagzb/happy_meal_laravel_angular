@@ -7,6 +7,7 @@ services:
     environment:
       - APP_NAME=msOrderBroker
       - SERVER_PORT=8000
+      - PORT=8000
       - APP_ENV=local
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
@@ -14,7 +15,7 @@ services:
       - DB_PORT=3306
       - DB_DATABASE=happy_meal
       - DB_USERNAME=root
-      - DB_PASSWORD=root
+      - DB_PASSWORD=
       - LOG_CHANNEL=stderr
       - LOG_LEVEL=debug
       - FRONTEND_BASE_URL=http://frontend_app:4200
@@ -37,6 +38,7 @@ services:
     environment:
       - APP_NAME=msKitchen
       - SERVER_PORT=8001
+      - PORT=8001
       - APP_ENV=local
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
@@ -44,7 +46,7 @@ services:
       - DB_PORT=3306
       - DB_DATABASE=happy_meal
       - DB_USERNAME=root
-      - DB_PASSWORD=root
+      - DB_PASSWORD=
       - LOG_CHANNEL=stderr
       - LOG_LEVEL=debug
       - QUEUE_CONNECTION=database
@@ -69,6 +71,7 @@ services:
     environment:
       - APP_NAME=msProvisioning
       - SERVER_PORT=8002
+      - PORT=8002
       - APP_ENV=local
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
@@ -76,7 +79,7 @@ services:
       - DB_PORT=3306
       - DB_DATABASE=happy_meal
       - DB_USERNAME=root
-      - DB_PASSWORD=root
+      - DB_PASSWORD=
       - LOG_CHANNEL=stderr
       - LOG_LEVEL=debug
       - ORDERS_BROKER_MS_BASE_URL=http://ms_order_broker:8000
@@ -147,6 +150,7 @@ services:
       - ms_providing
     networks:
       - laravel-network
+
 
 networks:
   laravel-network:
