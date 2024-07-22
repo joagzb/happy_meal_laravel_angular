@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, interval, Observable, Subscription} from 'rxjs';
 import {Order, OrderStatus} from '../models/order.js';
 import { environment } from '../../environments/environment';
 @Injectable({
@@ -14,9 +14,11 @@ export class OrderService {
 
   private orders: Order[] = [];
   private ordersSubject = new BehaviorSubject<Order[]>(this.orders);
+  private ordersIntervalSubscription: Subscription = new Subscription();
 
   constructor(private http: HttpClient) {
     this.fetchOrdersFromBroker();
+    this.checkOrdersPeriodically();
   }
 
   getOrders(): Observable<Order[]> {
@@ -56,5 +58,11 @@ export class OrderService {
     const response = this.http.post<any>(this.makeOrderUrl,{});
     this.fetchOrdersFromBroker();
     return response;
+  }
+
+  private checkOrdersPeriodically() {
+    this.ordersIntervalSubscription = interval(5000).subscribe(() => {
+      this.fetchOrdersFromBroker();
+    });
   }
 }

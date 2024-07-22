@@ -44,7 +44,7 @@ class notifyOrderFinished implements ShouldQueue
             // retry sending the webhook up to 3 times
             if ($this->attempts() <= 3) {
                 Log::warn("Order ready webhook FAILED for order " . $this->order->id . ". retrying...");
-                $this->release(5); //delay 5 seconds and try again
+                $this->release(3); //delay 3 seconds and try again
             } else {
                 Log::error("Order ready webhook FAILED for order " . $this->order->id . ". Reached max attempts " . $this->attempts());
             }

@@ -6,7 +6,6 @@ use App\Jobs\PurchaseIngredient;
 use App\Models\Ingredient;
 use App\Models\Purchase;
 use App\PurchaseStatusEnum;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class PurchaseService
@@ -31,6 +30,6 @@ class PurchaseService
             'buyAttempts' => 0,
         ]);
 
-        PurchaseIngredient::dispatch($purchase)->onQueue('purchases');
+        PurchaseIngredient::dispatch($purchase)->onQueue('purchases')->afterResponse();
     }
 }

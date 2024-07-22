@@ -49,7 +49,7 @@ class PurchaseIngredient implements ShouldQueue
             $this->purchase->updateStatusByBuyAttempts();
             $this->purchase = $this->purchase->fresh();
             $this->delay(1); //delay 1 seconds
-            $this->dispatch($this->purchase)->onQueue('purchases');
+            $this->dispatch($this->purchase)->onQueue('purchases')->afterResponse();
         } else {
             Log::error("Failed to purchase ingredient: retry limit reached");
         }

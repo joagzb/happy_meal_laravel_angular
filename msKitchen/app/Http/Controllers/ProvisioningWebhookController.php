@@ -24,5 +24,7 @@ class ProvisioningWebhookController extends Controller
         if($pendingOrders && $pendingOrders->count() > 0) {
             $this->orderService->prepareOrder($pendingOrders->first());
         }
+
+        return response()->json('ok', 200);
     }
 }

@@ -18,7 +18,7 @@ class MenuService
         $response = Http::get($this->KITCHEN_MS_BASE_URL . '/kitchen/menu');
 
         if ($response->failed()) {
-            throw new \Exception("could not get dishes from Kitchen MS: " . $response->body());
+            throw new \Exception("could not get dishes from Kitchen MS: " . $response->status() . ' ' . $response->body());
         }
 
         return $response->json();

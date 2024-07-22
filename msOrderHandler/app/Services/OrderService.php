@@ -18,7 +18,7 @@ class OrderService
         $response = Http::get($this->KITCHEN_MS_BASE_URL . '/kitchen/orders');
 
         if ($response->failed()) {
-            throw new \Exception("could not get orders from Kitchen MS: " . $response->body());
+            throw new \Exception("could not get orders from Kitchen MS: " . $response->status() . ' ' . $response->body());
         }
 
         return $response->json();
@@ -29,7 +29,7 @@ class OrderService
         $response = Http::post($this->KITCHEN_MS_BASE_URL . '/kitchen/orders');
 
         if ($response->failed()) {
-            throw new \Exception("could not create an order from Kitchen MS: " . $response->body());
+            throw new \Exception("could not create an order from Kitchen MS: " . $response->status() . ' ' . $response->body());
         }
 
         return $response->json();

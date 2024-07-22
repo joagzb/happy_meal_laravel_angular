@@ -2,35 +2,43 @@
 
 namespace Database\Seeders;
 
+use App\IngredientEnum;
+use App\Models\Dish;
+use App\Models\Ingredient;
 use App\Models\Recipe;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class RecipeSeeder extends Seeder
 {
+
+    private $dishes = [
+        'Tomato Salad' => [IngredientEnum::Tomato, IngredientEnum::Lettuce, IngredientEnum::Onion],
+        'Lemon Chicken' => [IngredientEnum::Lemon, IngredientEnum::Chicken],
+        'Potato Soup' => [IngredientEnum::Potato, IngredientEnum::Chicken],
+        'Rice and Meat' => [IngredientEnum::Rice, IngredientEnum::Onion, IngredientEnum::Meat],
+        'Burger' => [IngredientEnum::Ketchup, IngredientEnum::Meat, IngredientEnum::Lettuce, IngredientEnum::Cheese],
+        'Lettuce Wrap' => [IngredientEnum::Lettuce, IngredientEnum::Chicken, IngredientEnum::Lemon],
+        'Onion Rings' => [IngredientEnum::Onion, IngredientEnum::Potato, IngredientEnum::Cheese, IngredientEnum::Ketchup],
+        'Meat Stew' => [IngredientEnum::Meat, IngredientEnum::Potato, IngredientEnum::Onion],
+        'Chicken Curry' => [IngredientEnum::Chicken, IngredientEnum::Rice, IngredientEnum::Onion, IngredientEnum::Tomato],
+    ];
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Recipe::factory()->count(20)->create();
-        $this->removeDuplicatedIngredients();
-    }
+        foreach ($this->dishes as $dishName => $dishIngredients) {
+            $dish = Dish::create(['name' => $dishName]);
 
-    public function removeDuplicatedIngredients(): void
-    {
-        $duplicates = DB::table('recipes')
-            ->select('dish_id', 'ingredient_id', DB::raw('COUNT(*) as count'))
-            ->groupBy('dish_id', 'ingredient_id')
-            ->having('count', '>', 1)
-            ->get();
-
-        foreach ($duplicates as $duplicate) {
-            DB::table('recipes')
-                ->where('dish_id', $duplicate->dish_id)
-                ->where('ingredient_id', $duplicate->ingredient_id)
-                ->limit($duplicate->count - 1)
-                ->delete();
+            foreach ($dishIngredients as $ingredientEnum) {
+                $ingredient = Ingredient::where('name', $ingredientEnum->value)->first();
+                Recipe::create([
+                    'dish_id' => $dish->id,
+                    'ingredient_id' => $ingredient->id,
+                    'amount' => rand(1, 3),
+                ]);
+            }
         }
     }
 }

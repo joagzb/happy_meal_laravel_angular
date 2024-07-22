@@ -18,7 +18,7 @@ class StockService
         $response = Http::get($this->PROVISIONING_MS_BASE_URL . '/stock');
 
         if ($response->failed()) {
-            throw new \Exception("could not get ingredients from Provisioning MS: " . $response->status());
+            throw new \Exception("could not get ingredients from Provisioning MS: " . $response->status() . ' ' . $response->body());
         }
 
         return $response->json();
@@ -29,7 +29,7 @@ class StockService
         $response = Http::get($this->PROVISIONING_MS_BASE_URL . '/stock/purchases');
 
         if ($response->failed()) {
-            throw new \Exception("could not get purchases from Provisioning MS: " . $response->body());
+            throw new \Exception("could not get purchases from Provisioning MS: " . $response->status() . ' ' . $response->body());
         }
 
         return $response->json();

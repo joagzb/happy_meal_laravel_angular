@@ -6,10 +6,9 @@ use App\Events\OrderEvent;
 use App\Events\OrderFinished;
 use App\Events\OrderReadyToCook;
 use App\Events\OrderReceived;
-use App\Jobs\notifyOrderFinished;
 use App\Jobs\requestIngredient;
 use App\OrderStatusEnum;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Sleep;
 
@@ -70,7 +69,18 @@ class OrdersListener implements OrderStatusHandler
         $order->save();
 
         Log::debug("order finished: " . $order->id . " with dish: " . $order->dish->name);
+        $ORDERS_BROKER_WEBHOOK_ORDER_READY_URL = (string) env('ORDERS_BROKER_WEBHOOK_ORDER_READY_URL', 'http://localhost:8000/webhook/orders/:id/ready');
+        $webhookUrl = str_replace(':id', $order->id, $ORDERS_BROKER_WEBHOOK_ORDER_READY_URL);
 
-        notifyOrderFinished::dispatch($event->getOrder())->onQueue('orders');
+        $response = Http::post($webhookUrl, [
+            "order" => $order->with('dish')->first()
+        ]);
+
+        if ($response->successful()) {
+            Log::info("ready Order webhook SENT for order " . $order->id . " to " . $webhookUrl);
+        } else {
+            Log::warn("Order ready webhook FAILED for order " . $order->id . ". retrying...");
+            event(new OrderFinished($order));
+        }
     }
 }

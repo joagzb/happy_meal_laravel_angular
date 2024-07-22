@@ -15,8 +15,10 @@ class KitchenWebhookController extends Controller
     {
         Log::debug("Order Ready webhook status incoming from kitchenMS: " . json_encode($request->all()));
 
-        $frontendWebhookUrl = env('FRONTEND_BASE_URL') . "/webhook";
-        Log::debug("resending webhook to frontend: " . $frontendWebhookUrl);
-        Http::post($frontendWebhookUrl, $request->get('order'));
+        // $frontendWebhookUrl = env('FRONTEND_BASE_URL') . "/webhook";
+        // Log::debug("resending webhook to frontend: " . $frontendWebhookUrl);
+        // Http::post($frontendWebhookUrl, $request->get('order'));
+
+        return response()->json('ok', 200);
     }
 }
